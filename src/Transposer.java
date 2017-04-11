@@ -28,9 +28,9 @@ public class Transposer {
             List<String> words = Arrays.asList(tempString.split("[ ]+"));
             int i = 0;
             for (String w : words) {
-                w = String.format("%"+align+width+"s", w);
-                w = w.substring(0, width);
-
+                w = String.format("%" + align + width + "s", w);
+                if (cutoff)
+                    w = w.substring(0, width);
                 if (list.size() <= i) {
                     list.add(new ArrayList<String>());
                 }
@@ -53,7 +53,6 @@ public class Transposer {
             }
             i++;
             writer.write(sb.toString());
-            writer.flush();
             writer.newLine();
         }
         writer.close();
