@@ -1,9 +1,13 @@
+import com.sun.org.apache.xerces.internal.impl.io.ASCIIReader;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.CmdLineParser;
-import java.io.File;
-import java.io.IOException;
+import sun.misc.IOUtils;
+import sun.nio.ch.IOUtil;
+
+import java.io.*;
+import java.util.Scanner;
 
 
 public class TransposerLauncher {
@@ -28,7 +32,6 @@ public class TransposerLauncher {
 
     private void launch(String[] args) {
         CmdLineParser parser = new CmdLineParser(this);
-
         try {
             parser.parseArgument(args);
             if ((cutoff || align) && (width == 0))
@@ -39,10 +42,10 @@ public class TransposerLauncher {
             parser.printUsage(System.err);
             return;
         }
-
         Transposer transposer = new Transposer(width, align, cutoff);
         try {
-            transposer.transpose(ifile, ofile);
+            Reader reader = (ifile == null) ? new InputStreamReader(System.in) : new FileReader(ifile);
+            transposer.transpose(reader, ofile);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
