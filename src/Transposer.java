@@ -14,8 +14,8 @@ public class Transposer {
         this.cutoff = cutoff;
     }
 
-    public void transpose(Reader inputStream, File outputFile) throws IOException {
-        write(this.read(inputStream), outputFile);
+    public void transpose(Reader inputStream, Writer writer) throws IOException {
+        write(this.read(inputStream), writer);
     }
 
     private List<List<String>> read(Reader inputStream) throws IOException {
@@ -43,8 +43,7 @@ public class Transposer {
         return list;
     }
 
-    private static void write(List<List<String>> writeList, File outputFile) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+    private static void write(List<List<String>> writeList, Writer writer) throws IOException {
         for (List<String> l : writeList) {
             StringBuilder sb = new StringBuilder();
             for (String s : l) {
@@ -54,7 +53,7 @@ public class Transposer {
             }
             writer.write(sb.toString());
             if (l != writeList.get(writeList.size() - 1))
-                writer.newLine();
+                writer.append("\n");
         }
         writer.close();
     }

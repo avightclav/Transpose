@@ -45,7 +45,8 @@ public class TransposerLauncher {
         Transposer transposer = new Transposer(width, align, cutoff);
         try {
             Reader reader = (ifile == null) ? new InputStreamReader(System.in) : new FileReader(ifile);
-            transposer.transpose(reader, ofile);
+            Writer writer  = (ofile == null) ? new OutputStreamWriter(System.out) : new FileWriter(ofile);
+            transposer.transpose(reader, writer);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }

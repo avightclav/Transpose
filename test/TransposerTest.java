@@ -27,7 +27,7 @@ public class TransposerTest {
     @Test
     public void Transpose() {
         try {
-            new Transposer(8, false, false).transpose(new FileReader(new File("../test/text.txt")), new File("tuxt.txt"));
+            new Transposer(8, false, false).transpose(new FileReader(new File("../test/text.txt")), new FileWriter(new File("tuxt.txt")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -43,7 +43,8 @@ public class TransposerTest {
     @Test
     public void Transposer1() throws IOException {
         File file = new File("taxt.txt");
-        new Transposer(3, false, false).transpose(div, file);
+        Writer writer = new FileWriter(file);
+        new Transposer(3, false, false).transpose(div, writer);
         String s = "How Even As  When You And\n" +
                 "do  if  I   it's won't keep\n" +
                 "I   you admire dark let a  \n" +
