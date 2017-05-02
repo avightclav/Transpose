@@ -3,6 +3,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static junit.framework.Assert.assertEquals;
@@ -19,9 +20,8 @@ public class TransposerTest {
     }
 
     private void assertFileContent(String expectedContent, File file) throws FileNotFoundException {
-        Stream<String> reader = new BufferedReader(new FileReader(file)).lines();
-        String content = reader.reduce((s1, s2) -> s1 + "\n" + s2).get();
-        assertEquals(expectedContent, content);
+        String reader = new BufferedReader(new FileReader(file)).lines().collect(Collectors.joining("\n"));
+        assertEquals(expectedContent, reader);
     }
 
     @Test
@@ -53,5 +53,14 @@ public class TransposerTest {
                 "to  the house your\n" +
                 "you subway door";
         assertFileContent(s, file);
+    }
+
+    @Test
+    public void testEmptyFile() throws IOException {
+        File file = new File("taxt.txt");
+        Writer writer = new FileWriter(file);
+        new Transposer(3, true, true);
+        assertFileContent("", file);
+
     }
 }
