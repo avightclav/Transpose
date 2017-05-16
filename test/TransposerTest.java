@@ -1,3 +1,4 @@
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -9,14 +10,35 @@ import java.util.stream.Stream;
 import static junit.framework.Assert.assertEquals;
 
 public class TransposerTest {
+    private static File txtFile;
+    private static File divFile;
+    private static File emptyFile;
+    private static File outFile;
 
-    private static FileReader div;
-    private static FileReader txt;
+    private static FileReader txtReader;
+    private static FileReader divReader;
+    private static FileReader emptyReader;
 
-    @BeforeClass
-    public static void Initial() throws FileNotFoundException {
-        div = new FileReader(new File("test/diversion.txt"));
-        txt = new FileReader(new File("test/text.txt"));
+    private static FileWriter outWriter;
+
+    @Before
+    public void Before() throws IOException {
+        txtFile = new File("test/text.txt");
+        divFile = new File("test/diversion.txt");
+        emptyFile = new File("test/empty.txt");
+
+        txtReader = new FileReader(txtFile);
+        divReader = new FileReader(divFile);
+        emptyReader = new FileReader(emptyFile);
+
+        outFile = new File("test/out.txt");
+        outWriter = new FileWriter(outFile);
+    }
+
+    @After
+    public void After() throws IOException {
+        System.gc();
+        outFile.delete();
     }
 
     private void assertFileContent(String expectedContent, File file) throws FileNotFoundException {
@@ -24,43 +46,51 @@ public class TransposerTest {
         assertEquals(expectedContent, reader);
     }
 
+
     @Test
-    public void Transpose() {
-        try {
-            new Transposer(8, false, false).transpose(new FileReader(new File("../test/text.txt")), new FileWriter(new File("tuxt.txt")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            assertFileContent(new String("AaaBbb   MmmNnn   67      \n" +
-                    "ZzzAaa   C       \n" +
-                    "4       "), new File("tuxt.txt"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    public void emptyFileTest() throws IOException {
+        new Transposer(3, true, true).transpose(emptyReader, outWriter);
+        assertFileContent("", outFile);
+
     }
 
     @Test
-    public void Transposer1() throws IOException {
-        File file = new File("taxt.txt");
-        Writer writer = new FileWriter(file);
-        new Transposer(3, false, false).transpose(div, writer);
-        String s = "How Even As  When You And\n" +
+    public void widthTest() throws IOException {
+        new Transposer(3, false, false).transpose(divReader, outWriter);
+        assertFileContent("How Even As  When You And\n" +
                 "do  if  I   it's won't keep\n" +
                 "I   you admire dark let a  \n" +
                 "get don't you outside anybody padlock\n" +
                 "close notice on  your out on \n" +
                 "to  the house your\n" +
-                "you subway door";
-        assertFileContent(s, file);
+                "you subway door", outFile);
     }
 
     @Test
-    public void testEmptyFile() throws IOException {
-        File file = new File("taxt.txt");
-        Writer writer = new FileWriter(file);
-        new Transposer(3, true, true);
-        assertFileContent("", file);
+    public void alignTest() throws IOException {
+        new Transposer(8, true, false).transpose(txtReader, outWriter);
+        assertFileContent("  AaaBbb   MmmNnn       67\n" +
+                "  ZzzAaa        C\n" +
+                "       4", outFile);
 
     }
+
+    @Test
+    public void cutoffTest() throws IOException {
+        new Transposer(2, false, true).transpose(txtReader, outWriter);
+        assertFileContent("Aa Mm 67\n" +
+                "Zz C \n" +
+                "4 ", outFile);
+
+    }
+
+    @Test
+    public void cutoffAlignTest() throws IOException {
+        new Transposer(2, true, true).transpose(txtReader, outWriter);
+        assertFileContent("Aa Mm 67\n" +
+                "Zz  C\n" +
+                " 4", outFile);
+
+    }
+
 }
